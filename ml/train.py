@@ -5,6 +5,7 @@ from keras.optimizers import Adam
 from keras.callbacks import ModelCheckpoint
 from config import *
 from sklearn.metrics import roc_auc_score
+import pickle
 
 checkpoint_filepath = 'ml/tmp/checkpoint'
 
@@ -56,5 +57,8 @@ print("Finished creating model")
 optimizer = Adam(lr=1e-3, beta_1 = 0.9, beta_2 = 0.999, epsilon=1e-8, decay=0.0, amsgrad=False)
 model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=[tf.keras.metrics.AUC(from_logits=True)])
 
-model.fit(x_train, y_train, batch_size=32, epochs=10, validation_data=(x_val, y_val), callbacks = [roc,early_stopping, tensorboard, reduce_lr])
+history = model.fit(x_train, y_train, batch_size=32, epochs=10, validation_data=(x_val, y_val), callbacks = [roc,early_stopping, tensorboard, reduce_lr])
+with open('ml/models/history.pkl', 'wb') as file_pi:
+        pickle.dump(history.history, file_pi)
+    
 model.save('ml/models/sentimentmodel2.h5')
