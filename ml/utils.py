@@ -3,11 +3,11 @@ import nltk
 from nltk import pos_tag, word_tokenize
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import stopwords
-nltk.download('punkt', quite=True)
-nltk.download('averaged_perceptron_tagger', quite=True)
-nltk.download('wordnet', quite=True)
-nltk.download('stopwords',  quite=True)
-nltk.download('omw-1.4', quite=True)
+nltk.download('punkt', quiet=True)
+nltk.download('averaged_perceptron_tagger', quiet=True)
+nltk.download('wordnet', quiet=True)
+nltk.download('stopwords',  quiet=True)
+nltk.download('omw-1.4', quiet=True)
 
 stop_words = set(stopwords.words('english'))
 
