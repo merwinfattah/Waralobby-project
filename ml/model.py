@@ -10,7 +10,7 @@ def create_model(vocab_size, max_length, embedding_dim, word_index):
     dense_dim = 64
 
     embeddings_index = {}
-    with io.open('models/glove.6B.100d.txt', 'r', encoding='utf-8') as f:
+    with io.open('ml/models/glove.6B.100d.txt', 'r', encoding='utf-8') as f:
         for line in f:
             values = line.strip().split()
             curr_word = values[0]
@@ -26,12 +26,12 @@ def create_model(vocab_size, max_length, embedding_dim, word_index):
     # create the model
     model = tf.keras.Sequential([
         tf.keras.layers.Embedding(vocab_size, embedding_dim, input_length=max_length, weights=[embedding_matrix], trainable=False),
-        tf.keras.layers.Dropout(0.3),
         tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(lstm1_dim, return_sequences=True)),
         tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(lstm2_dim)),
+        tf.keras.layers.Dropout(0.3),
         tf.keras.layers.Dense(dense_dim, activation='relu'),
         tf.keras.layers.Dense(1, activation='sigmoid')
     ])
     
-    model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['auc'])
-    return model
+    # model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['auc'])
+    return model    
