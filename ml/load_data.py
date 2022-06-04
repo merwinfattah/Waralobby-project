@@ -6,6 +6,8 @@ import csv
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from config import *
+import io
+import json
 
 def parse_data_from_file(filename):
     """
@@ -82,7 +84,7 @@ def load_data():
         train_sentences, validation_sentences, test_sentences, train_sentiment, validation_sentiment, test_sentiment (list of string, list of string, list of string, list of string, list of string, list of string): tuple containing lists of sentences and labels
     """
     # Load the data
-    sentences, sentiment = parse_data_from_file('./dataset/preprocessed/processed_review_binary.csv')
+    sentences, sentiment = parse_data_from_file('ml/dataset/preprocessed/processed_review_binary.csv')
 
     # Split the data into train/validation/test sets
     train_sentences, validation_sentences, test_sentences, train_sentiment, validation_sentiment, test_sentiment = train_val_test_split(sentences, sentiment, 0.7, 0.1)
@@ -90,6 +92,10 @@ def load_data():
     # fit tokenizer
     tokenizer = fit_tokenizer(train_sentences, num_words=NUM_WORDS, oov_token=OOV_TOKEN)
     word_index = tokenizer.word_index
+     # save tokenizer vocabulary to file
+    tokenizer_json = tokenizer.to_json()
+    with io.open('ml/tokenizer/tokenizer.json', 'w', encoding='utf-8') as f:
+        f.write(json.dumps(tokenizer_json, ensure_ascii=False))
 
     # sequencing and padding sentences
     train_padded_sentences = seq_and_pad(train_sentences, tokenizer, PADDING, MAXLEN)
@@ -109,4 +115,6 @@ def load_data():
     validation_sentiment = np.array(validation_sentiment)
     test_sentiment = np.array(test_sentiment)
 
-    return train_sentences, validation_sentences, test_sentences, train_sentiment, validation_sentiment, test_sentiment, vocab_size
+    print("Finished loading data\n")
+
+    return train_sentences, validation_sentences, test_sentences, train_sentiment, validation_sentiment, test_sentiment, vocab_size, word_index
