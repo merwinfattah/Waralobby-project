@@ -8,6 +8,7 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 from config import *
 import io
 import json
+import random
 
 def parse_data_from_file(filename):
     """
@@ -31,22 +32,22 @@ def parse_data_from_file(filename):
 
     return sentences, sentiment
 
-def train_val_test_split(sentences, sentiment, training_split, val_split):    
+def train_val_test_split(sentences, sentiment, training_split):    
     # Compute the number of sentences that will be used for training (should be an integer)
     train_size = int(len(sentences) * training_split)
-    val_size = train_size + int(len(sentences) * val_split)
+    # val_size = train_size + int(len(sentences) * val_split)
 
     # Split the sentences and labels into train/validation splits
     train_sentences = sentences[:train_size]
     train_sentiment = sentiment[:train_size]
 
-    validation_sentences = sentences[train_size:val_size]
-    validation_sentiment = sentiment[train_size:val_size]
+    validation_sentences = sentences[train_size:]
+    validation_sentiment = sentiment[train_size:]
 
-    test_sentences = sentences[val_size:]
-    test_sentiment = sentiment[val_size:]
+    # test_sentences = sentences[val_size:]
+    # test_sentiment = sentiment[val_size:]
     
-    return train_sentences, validation_sentences, test_sentences, train_sentiment, validation_sentiment, test_sentiment
+    return train_sentences, validation_sentences, train_sentiment, validation_sentiment
 
 def fit_tokenizer(train_sentences, num_words, oov_token):
   tokenizer = Tokenizer(num_words=num_words, oov_token=oov_token)
@@ -81,13 +82,23 @@ def load_data():
     Loads the data from the CSV files and splits them into train/validation/test sets
     
     Returns:
-        train_sentences, validation_sentences, test_sentences, train_sentiment, validation_sentiment, test_sentiment (list of string, list of string, list of string, list of string, list of string, list of string): tuple containing lists of sentences and labels
+        train_sentences, validation_sentences, train_sentiment, validation_sentiment
     """
     # Load the data
     sentences, sentiment = parse_data_from_file('ml/dataset/preprocessed/processed_review_binary.csv')
 
+    # Bundle the two lists into a single one
+    sentences_and_sentiment = list(zip(sentences, sentiment))
+
+    # Perform random sampling
+    random.seed(42)
+    sentences_and_sentiment = random.sample(sentences_and_sentiment, len(sentences))
+
+    # Unpack back into separate lists
+    sentences, sentiment = zip(*sentences_and_sentiment)
+
     # Split the data into train/validation/test sets
-    train_sentences, validation_sentences, test_sentences, train_sentiment, validation_sentiment, test_sentiment = train_val_test_split(sentences, sentiment, 0.7, 0.1)
+    train_sentences, validation_sentences, train_sentiment, validation_sentiment = train_val_test_split(sentences, sentiment, 0.8)
 
     # fit tokenizer
     tokenizer = fit_tokenizer(train_sentences, num_words=NUM_WORDS, oov_token=OOV_TOKEN)
@@ -100,7 +111,7 @@ def load_data():
     # sequencing and padding sentences
     train_padded_sentences = seq_and_pad(train_sentences, tokenizer, PADDING, MAXLEN)
     validation_padded_sentences = seq_and_pad(validation_sentences, tokenizer, PADDING, MAXLEN)
-    test_padded_sentences = seq_and_pad(test_sentences, tokenizer, PADDING, MAXLEN)
+    # test_padded_sentences = seq_and_pad(test_sentences, tokenizer, PADDING, MAXLEN)
 
     # initializing vocab_size
     vocab_size = len(word_index) + 1
@@ -108,13 +119,13 @@ def load_data():
     # converting sentences into numpy arrays
     train_sentences = np.array(train_padded_sentences)
     validation_sentences = np.array(validation_padded_sentences)
-    test_sentences = np.array(test_padded_sentences)
+    # test_sentences = np.array(test_padded_sentences)
 
     # converting sentiment into numpy arrays
     train_sentiment = np.array(train_sentiment)
     validation_sentiment = np.array(validation_sentiment)
-    test_sentiment = np.array(test_sentiment)
+    # test_sentiment = np.array(test_sentiment)
 
     print("Finished loading data\n")
 
-    return train_sentences, validation_sentences, test_sentences, train_sentiment, validation_sentiment, test_sentiment, vocab_size, word_index
+    return train_sentences, validation_sentences, train_sentiment, validation_sentiment, vocab_size, word_index

@@ -12,7 +12,7 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 
 
 
-model = load_model('ml/models/sentimentmodel2.h5')
+model = load_model('ml/models/sentimentmodel1_final.h5')
 
 # x_train, x_val, x_test, y_train, y_val, y_test, vocab_size, word_index = load_data()
 
