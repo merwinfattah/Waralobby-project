@@ -34,8 +34,6 @@ The API server will run on http://127.0.0.1:8000
 
 FastAPI already have a GUI to easily try and access the API Endpoints. You can access the API endpoint through http://127.0.0.1:8000/docs#/
 
-![API GUI](/img/docs.png?raw=true "The GUI of FastAPI")
-
 The API endpoint is http://127.0.0.1:8000/predict
 
 ### Parameters
@@ -62,6 +60,6 @@ The response of the API is in JSON format (content-type header 'application/json
 ## Contributors
 Ida Bagus Raditya Avanindra Mahaputra\
 M2002F0054\
-Kanisius Sosrodimardito
+Kanisius Sosrodimardito\
 M2002G0037\
 Bangkit Machine Learning Path
